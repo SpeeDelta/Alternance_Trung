@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suivi Alternance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F5F3EE;
+      --bg-card: #FDFCFA;
+      --bg-hover: #EFEDE8;
+      --text: #1A1916;
+      --text-muted: #7A7870;
+      --text-faint: #B0AEA8;
+      --border: #E2DFD8;
+      --border-strong: #C8C5BC;
+      --accent: #2B6CB0;
+      --accent-bg: #EBF4FF;
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #17161A;
+        --bg-card: #1F1E23;
+        --bg-hover: #28272D;
+        --text: #F0EEE8;
+        --text-muted: #8A8890;
+        --text-faint: #555360;
+        --border: #2E2D34;
+        --border-strong: #44424C;
+        --accent: #63AEF0;
+        --accent-bg: #1A2A3D;
+        --shadow: 0 1px 3px rgba(0,0,0,0.3);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      }
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .stat {
+      background: var(--bg-card);
+      flex: 1;
+      min-width: 120px;
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .stat-num {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: var(--mono);
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+    .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      padding: 16px 2rem;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    input[type="text"], input[type="url"], input[type="date"], select, textarea {
+      font-family: var(--font);
+      font-size: 13px;
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(43,108,176,0.12); }
+    select { cursor: pointer; padding-right: 28px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A8890' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-faint); pointer-events: none; }
+    .search-wrap input { padding-left: 30px; width: 200px; }
+
+    .btn {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+    .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-sm { font-size: 12px; padding: 4px 9px; }
+    .btn-ghost { border-color: transparent; background: transparent; }
+    .btn-ghost:hover { background: var(--bg-hover); border-color: var(--border); }
+    .btn-danger:hover { background: #FEE2E2; border-color: #FCA5A5; color: #991B1B; }
+
+    .ml-auto { margin-left: auto; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    thead th {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 10px 16px;
+      text-align: left;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      user-select: none;
+      cursor: pointer;
+    }
+    thead th:hover { color: var(--text); }
+    thead th.sorted { color: var(--accent); }
+
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:hover { background: var(--bg-hover); }
+    tbody tr:last-child { border-bottom: none; }
+    td { padding: 11px 16px; font-size: 13px; color: var(--text); vertical-align: middle; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    td.notes-cell { color: var(--text-muted); font-size: 12px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .b-envoyee      { background: #EBF4FF; color: #1D4ED8; }
+    .b-arelancer    { background: #FEF3C7; color: #92400E; }
+    .b-relancee     { background: #FDE68A; color: #78350F; }
+    .b-entretien-p  { background: #EDE9FE; color: #5B21B6; }
+    .b-entretien-d  { background: #D1FAE5; color: #065F46; }
+    .b-test         { background: #FCE7F3; color: #9D174D; }
+    .b-offre        { background: #D1FAE5; color: #064E3B; }
+    .b-refus        { background: #FEE2E2; color: #991B1B; }
+    .b-abandonnee   { background: #F3F4F6; color: #6B7280; }
+
+    @media (prefers-color-scheme: dark) {
+      .b-envoyee      { background: #1E3A5F; color: #93C5FD; }
+      .b-arelancer    { background: #3D2900; color: #FCD34D; }
+      .b-relancee     { background: #4A2E00; color: #F59E0B; }
+      .b-entretien-p  { background: #2E1A5E; color: #C4B5FD; }
+      .b-entretien-d  { background: #064E3B; color: #6EE7B7; }
+      .b-test         { background: #4A0E2B; color: #F9A8D4; }
+      .b-offre        { background: #022C22; color: #34D399; }
+      .b-refus        { background: #450A0A; color: #FCA5A5; }
+      .b-abandonnee   { background: #1F2937; color: #9CA3AF; }
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      padding: 64px 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .empty-state p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+    /* ── Actions ── */
+    .actions { display: flex; gap: 2px; justify-content: flex-end; opacity: 0; transition: opacity 0.15s; }
+    tr:hover .actions { opacity: 1; }
+
+    /* ── Modal ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .modal-header {
+      padding: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+    .modal-body { padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-body .full { grid-column: 1 / -1; }
+    .field label { display: block; font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+    .field input, .field select, .field textarea { width: 100%; }
+    .field textarea { height: 80px; resize: vertical; }
+    .modal-footer { padding: 0 24px 20px; display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ── Detail panel ── */
+    .detail-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+    }
+    .detail-overlay.open { display: block; }
+    .detail-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.2); }
+    .detail-panel {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 380px;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      padding: 24px;
+      overflow-y: auto;
+      animation: slideIn 0.2s ease;
+    }
+    @keyframes slideIn { from { transform: translateX(20px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+    .detail-panel h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 4px; }
+    .detail-panel .company { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+    .detail-val { font-size: 13px; color: var(--text); text-align: right; word-break: break-word; }
+
+    /* ── Import modal ── */
+    .import-drop {
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius);
+      padding: 36px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-muted);
+    }
+    .import-drop:hover, .import-drop.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+    .import-drop svg { display: block; margin: 0 auto 10px; opacity: 0.5; }
+    .import-drop p { font-size: 13px; margin-bottom: 4px; }
+    .import-drop small { font-size: 11px; opacity: 0.7; }
+    .preview-table-wrap { max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 12px; }
+    .preview-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .preview-table th { background: var(--bg); padding: 7px 10px; text-align: left; font-weight: 500; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); position: sticky; top: 0; }
+    .preview-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .preview-table tr:last-child td { border-bottom: none; }
+    .preview-table tr:hover td { background: var(--bg-hover); }
+    .import-mode { display: flex; gap: 8px; margin-top: 14px; }
+    .mode-btn { flex: 1; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); cursor: pointer; font-family: var(--font); font-size: 12px; color: var(--text-muted); text-align: center; transition: all 0.15s; }
+    .mode-btn.active { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); font-weight: 500; }
+    .mode-btn strong { display: block; font-size: 13px; margin-bottom: 2px; }
+    .col-map { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+    .col-map-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .col-map-row label { color: var(--text-muted); width: 90px; flex-shrink: 0; }
+    .col-map-row select { flex: 1; font-size: 12px; padding: 5px 8px; }
+    .import-info { font-size: 12px; color: var(--text-muted); background: var(--bg); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 12px; line-height: 1.6; }
+    .import-info strong { color: var(--text); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text);
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 18px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: all 0.2s;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      header { padding: 0 1rem; }
+      .toolbar { padding: 12px 1rem; }
+      .detail-panel { width: 100%; }
+      .modal-body { grid-template-columns: 1fr; }
+      .modal-body .full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">suivi<span>.</span>alternance</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn btn-sm" onclick="exportCSV()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Export CSV
+    </button>
+    <button class="btn btn-sm" onclick="triggerImport()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      Import
+    </button>
+    <input type="file" id="importFile" accept=".csv,.json" style="display:none" onchange="handleImportFile(event)" />
+    <button class="btn btn-sm btn-primary" onclick="openAdd()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Nouvelle candidature
+    </button>
+  </div>
+</header>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Rechercher..." oninput="render()" />
+  </div>
+  <select id="filterStatus" onchange="render()">
+    <option value="">Tous les statuts</option>
+    <option>Envoyée</option>
+    <option>Vue / À relancer</option>
+    <option>Relance envoyée</option>
+    <option>Entretien planifié</option>
+    <option>Entretien passé</option>
+    <option>Test technique</option>
+    <option>Offre reçue</option>
+    <option>Refus</option>
+    <option>Abandonnée</option>
+  </select>
+  <select id="filterLoc" onchange="render()">
+    <option value="">Toutes les villes</option>
+  </select>
+  <span id="resultCount" style="font-size:12px;color:var(--text-muted);margin-left:4px;"></span>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortBy('entreprise')">Entreprise</th>
+        <th onclick="sortBy('poste')">Poste</th>
+        <th onclick="sortBy('loc')">Localisation</th>
+        <th onclick="sortBy('date')">Date</th>
+        <th onclick="sortBy('statut')">Statut</th>
+        <th>Contact RH</th>
+        <th>Lien</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div class="empty-icon">📋</div>
+    <h3>Aucune candidature</h3>
+    <p>Commence par ajouter ta première candidature</p>
+    <button class="btn btn-primary" onclick="openAdd()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Ajouter une candidature
+    </button>
+  </div>
+</div>
+
+<!-- Modal ajout/édition -->
+<div class="overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Nouvelle candidature</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Entreprise *</label><input type="text" id="fEntreprise" placeholder="Ex : Société Générale" /></div>
+      <div class="field"><label>Poste *</label><input type="text" id="fPoste" placeholder="Ex : Développeur Web" /></div>
+      <div class="field"><label>Localisation</label><input type="text" id="fLoc" placeholder="Paris, Lyon…" /></div>
+      <div class="field"><label>Date de candidature</label><input type="date" id="fDate" /></div>
+      <div class="field full"><label>Statut</label>
+        <select id="fStatut">
+          <option>Envoyée</option>
+          <option>Vue / À relancer</option>
+          <option>Relance envoyée</option>
+          <option>Entretien planifié</option>
+          <option>Entretien passé</option>
+          <option>Test technique</option>
+          <option>Offre reçue</option>
+          <option>Refus</option>
+          <option>Abandonnée</option>
+        </select>
+      </div>
+      <div class="field"><label>Contact RH</label><input type="text" id="fContact" placeholder="Nom ou email" /></div>
+      <div class="field"><label>Lien de l'offre</label><input type="url" id="fLien" placeholder="https://…" /></div>
+      <div class="field full"><label>Notes</label><textarea id="fNotes" placeholder="Impressions, infos utiles…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="save()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Panneau détail -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-bg" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detailPanel"></div>
+</div>
+
+<!-- Modal import -->
+<div class="overlay" id="importOverlay" onclick="closeImportOnBg(event)">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <h2 id="importTitle">Importer des candidatures</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeImport()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="grid-template-columns:1fr;gap:12px;" id="importBody">
+      <!-- Step 1: drop zone -->
+      <div id="importStep1">
+        <div class="import-drop" id="dropZone" onclick="document.getElementById('importFile').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <p>Glisse un fichier ici ou clique pour choisir</p>
+          <small>Formats acceptés : CSV (séparateur , ou ;) · JSON</small>
+        </div>
+        <div class="import-info" style="margin-top:10px;">
+          <strong>Format CSV attendu</strong> — les colonnes peuvent être dans n'importe quel ordre, tu pourras les mapper à l'étape suivante :<br>
+          <code style="font-family:var(--mono);font-size:11px;color:var(--accent);">Entreprise, Poste, Localisation, Date, Statut, Contact RH, Lien, Notes</code>
+        </div>
+      </div>
+
+      <!-- Step 2: preview + mapping -->
+      <div id="importStep2" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span id="importFileInfo" style="font-size:12px;color:var(--text-muted);"></span>
+          <button class="btn btn-ghost btn-sm" onclick="resetImport()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Changer de fichier
+          </button>
+        </div>
+
+        <div id="colMapSection" style="display:none;">
+          <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Correspondance des colonnes</p>
+          <div class="col-map" id="colMapGrid"></div>
+        </div>
+
+        <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin:12px 0 6px;text-transform:uppercase;letter-spacing:0.06em;">Aperçu <span id="previewCount"></span></p>
+        <div class="preview-table-wrap">
+          <table class="preview-table">
+            <thead><tr><th>Entreprise</th><th>Poste</th><th>Ville</th><th>Date</th><th>Statut</th></tr></thead>
+            <tbody id="previewBody"></tbody>
+          </table>
+        </div>
+
+        <p style="font-size:12px;font-weight:500;color:var(--text-muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.06em;">Mode d'import</p>
+        <div class="import-mode">
+          <div class="mode-btn active" id="modeFusion" onclick="setMode('fusion')">
+            <strong>Fusionner</strong>
+            Ajouter aux candidatures existantes
+          </div>
+          <div class="mode-btn" id="modeRemplacer" onclick="setMode('remplacer')">
+            <strong>Remplacer</strong>
+            Effacer tout et importer
+          </div>
+        </div>
+        <div id="modeWarning" style="display:none;font-size:12px;color:#B45309;background:#FEF3C7;border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;">
+          ⚠️ Toutes les candidatures actuelles seront supprimées.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeImport()">Annuler</button>
+      <button class="btn btn-primary" id="importConfirmBtn" style="display:none;" onclick="confirmImport()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        Importer <span id="importCountLabel"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const KEY = 'suivi_alternance_v1';
+  let data = [];
+  let editId = null;
+  let sortKey = 'date';
+  let sortAsc = false;
+
+  const statusClass = {
+    'Envoyée': 'b-envoyee',
+    'Vue / À relancer': 'b-arelancer',
+    'Relance envoyée': 'b-relancee',
+    'Entretien planifié': 'b-entretien-p',
+    'Entretien passé': 'b-entretien-d',
+    'Test technique': 'b-test',
+    'Offre reçue': 'b-offre',
+    'Refus': 'b-refus',
+    'Abandonnée': 'b-abandonnee',
+  };
+
+  function load() {
+    try { data = JSON.parse(localStorage.getItem(KEY)) || []; } catch { data = []; }
+    render();
+  }
+
+  function save() {
+    const e = v => document.getElementById(v).value.trim();
+    const entreprise = e('fEntreprise'), poste = e('fPoste');
+    if (!entreprise || !poste) { toast('Entreprise et poste sont requis.', true); return; }
+    const entry = {
+      id: editId || crypto.randomUUID(),
+      entreprise, poste,
+      loc: e('fLoc'),
+      date: document.getElementById('fDate').value,
+      statut: document.getElementById('fStatut').value,
+      contact: e('fContact'),
+      lien: e('fLien'),
+      notes: e('fNotes'),
+      updatedAt: new Date().toISOString(),
+    };
+    if (editId) {
+      const i = data.findIndex(x => x.id === editId);
+      if (i >= 0) data[i] = entry;
+    } else {
+      data.unshift(entry);
+    }
+    persist();
+    closeModal();
+    render();
+    toast(editId ? 'Candidature mise à jour ✓' : 'Candidature ajoutée ✓');
+  }
+
+  function persist() {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('Supprimer cette candidature ?')) return;
+    data = data.filter(x => x.id !== id);
+    persist();
+    render();
+    toast('Candidature supprimée');
+  }
+
+  function sortBy(key) {
+    if (sortKey === key) sortAsc = !sortAsc;
+    else { sortKey = key; sortAsc = true; }
+    render();
+  }
+
+  function filtered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const fs = document.getElementById('filterStatus').value;
+    const fl = document.getElementById('filterLoc').value;
+    return data
+      .filter(c => {
+        const matchQ = !q || [c.entreprise, c.poste, c.loc, c.contact, c.notes].some(v => v && v.toLowerCase().includes(q));
+        const matchS = !fs || c.statut === fs;
+        const matchL = !fl || c.loc === fl;
+        return matchQ && matchS && matchL;
+      })
+      .sort((a, b) => {
+        let va = a[sortKey] || '', vb = b[sortKey] || '';
+        if (sortKey === 'date') { va = va || '0'; vb = vb || '0'; }
+        const cmp = va < vb ? -1 : va > vb ? 1 : 0;
+        return sortAsc ? cmp : -cmp;
+      });
+  }
+
+  function render() {
+    const rows = filtered();
+    const tbody = document.getElementById('tbody');
+    const empty = document.getElementById('emptyState');
+    const count = document.getElementById('resultCount');
+    count.textContent = rows.length !== data.length ? `${rows.length} / ${data.length} candidatures` : `${data.length} candidature${data.length !== 1 ? 's' : ''}`;
+
+    if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; } else empty.style.display = 'none';
+
+    tbody.innerHTML = rows.map(c => `
+      <tr>
+        <td style="font-weight:500;" title="${c.entreprise}">${c.entreprise || '—'}</td>
+        <td title="${c.poste}">${c.poste || '—'}</td>
+        <td>${c.loc || '—'}</td>
+        <td style="font-family:var(--mono);font-size:12px;color:var(--text-muted);">${c.date ? fmt(c.date) : '—'}</td>
+        <td><span class="badge ${statusClass[c.statut] || ''}">${c.statut || '—'}</span></td>
+        <td title="${c.contact||''}">${c.contact || '—'}</td>
+        <td>${c.lien ? `<a href="${c.lien}" target="_blank" rel="noopener" style="color:var(--accent);font-size:12px;">voir ↗</a>` : '—'}</td>
+        <td>
+          <div class="actions">
+            <button class="btn btn-ghost btn-sm" onclick="openDetail('${c.id}')" title="Détails">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="openEdit('${c.id}')" title="Modifier">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn btn-ghost btn-sm btn-danger" onclick="deleteEntry('${c.id}')" title="Supprimer">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    renderStats();
+    renderLocFilter();
+  }
+
+  function renderStats() {
+    const total = data.length;
+    const enAttente = data.filter(c => ['Envoyée','Vue / À relancer','Relance envoyée'].includes(c.statut)).length;
+    const entretiens = data.filter(c => ['Entretien planifié','Entretien passé'].includes(c.statut)).length;
+    const offres = data.filter(c => c.statut === 'Offre reçue').length;
+    const refus = data.filter(c => c.statut === 'Refus').length;
+    document.getElementById('statsBar').innerHTML = [
+      { num: total, label: 'Candidatures' },
+      { num: enAttente, label: 'En attente' },
+      { num: entretiens, label: 'Entretiens' },
+      { num: offres, label: 'Offres' },
+      { num: refus, label: 'Refus' },
+    ].map(s => `<div class="stat"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+  }
+
+  function renderLocFilter() {
+    const sel = document.getElementById('filterLoc');
+    const cur = sel.value;
+    const locs = [...new Set(data.map(c => c.loc).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">Toutes les villes</option>' + locs.map(l => `<option${l===cur?' selected':''}>${l}</option>`).join('');
+  }
+
+  function fmt(d) {
+    const [y,m,j] = d.split('-');
+    return `${j}/${m}/${y}`;
+  }
+
+  function openAdd() {
+    editId = null;
+    document.getElementById('modalTitle').textContent = 'Nouvelle candidature';
+    ['fEntreprise','fPoste','fLoc','fContact','fLien','fNotes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('fStatut').value = 'Envoyée';
+    document.getElementById('modalOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('fEntreprise').focus(), 100);
+  }
+
+  function openEdit(id) {
+    const c = data.find(x => x.id === id);
+    if (!c) return;
+    editId = id;
+    document.getElementById('modalTitle').textContent = 'Modifier la candidature';
+    document.getElementById('fEntreprise').value = c.entreprise || '';
+    document.getElementById('fPoste').value = c.poste || '';
+    document.getElementById('fLoc').value = c.loc || '';
+    document.getElementById('fDate').value = c.date || '';
+    document.getElementById('fStatut').value = c.statut || 'Envoyée';
+    document.getElementById('fContact').value = c.contact || '';
+    document.getElementById('fLien').value = c.lien || '';
+    document.getElementById('fNotes').value = c.notes || '';
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+  function closeModalOnBg(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+  function openDetail(id) {
+    const c = data.find(x => x.id === id);
+    if (!c) return;
+    const rows = [
+      ['Entreprise', c.entreprise],
+      ['Poste', c.poste],
+      ['Localisation', c.loc],
+      ['Date', c.date ? fmt(c.date) : null],
+      ['Statut', c.statut ? `<span class="badge ${statusClass[c.statut]}">${c.statut}</span>` : null],
+      ['Contact RH', c.contact],
+      ['Lien offre', c.lien ? `<a href="${c.lien}" target="_blank" rel="noopener" style="color:var(--accent)">Voir l'offre ↗</a>` : null],
+      ['Notes', c.notes],
+    ].filter(r => r[1]);
+    document.getElementById('detailPanel').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div>
+          <h2>${c.poste || '—'}</h2>
+          <div class="company">${c.entreprise || ''} ${c.loc ? '· ' + c.loc : ''}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeDetail()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      ${rows.map(([k,v]) => `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`).join('')}
+      <div style="margin-top:20px;display:flex;gap:8px;">
+        <button class="btn btn-sm" style="flex:1;" onclick="closeDetail();openEdit('${c.id}')">Modifier</button>
+        <button class="btn btn-sm btn-danger" style="flex:1;" onclick="closeDetail();deleteEntry('${c.id}')">Supprimer</button>
+      </div>
+    `;
+    document.getElementById('detailOverlay').classList.add('open');
+  }
+  function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
+
+  function exportCSV() {
+    if (!data.length) { toast('Aucune donnée à exporter', true); return; }
+    const headers = ['Entreprise','Poste','Localisation','Date','Statut','Contact RH','Lien','Notes'];
+    const rows = data.map(c => [c.entreprise,c.poste,c.loc,c.date,c.statut,c.contact,c.lien,c.notes].map(v => `"${(v||'').replace(/"/g,'""')}"`));
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `candidatures_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    toast('Export CSV téléchargé ✓');
+  }
+
+  let toastTimer;
+  function toast(msg, isError) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.style.background = isError ? '#B91C1C' : 'var(--text)';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeDetail(); }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openAdd(); }
+  });
+
+
+  /* ── Import ── */
+  let importRows = [];
+  let importMode = 'fusion';
+  let importColMap = {};
+
+  const FIELDS = [
+    { key: 'entreprise', label: 'Entreprise' },
+    { key: 'poste',      label: 'Poste' },
+    { key: 'loc',        label: 'Localisation' },
+    { key: 'date',       label: 'Date' },
+    { key: 'statut',     label: 'Statut' },
+    { key: 'contact',    label: 'Contact RH' },
+    { key: 'lien',       label: 'Lien offre' },
+    { key: 'notes',      label: 'Notes' },
+  ];
+
+  const ALIASES = {
+    entreprise: ['entreprise','company','société','societe','organisation','organization','employeur'],
+    poste:      ['poste','role','rôle','titre','title','job','position','intitulé','intitule'],
+    loc:        ['localisation','location','ville','city','lieu','adresse','address'],
+    date:       ['date','date de candidature','applied','applied date','date applied','postuled'],
+    statut:     ['statut','status','état','etat','stage'],
+    contact:    ['contact','contact rh','rh','recruteur','recruiter','email','nom'],
+    lien:       ['lien','url','link','offre','annonce','lien offre'],
+    notes:      ['notes','note','commentaire','commentaires','remarques','impressions'],
+  };
+
+  function triggerImport() {
+    resetImport();
+    document.getElementById('importOverlay').classList.add('open');
+  }
+
+  function closeImport() {
+    document.getElementById('importOverlay').classList.remove('open');
+  }
+
+  function closeImportOnBg(e) {
+    if (e.target === document.getElementById('importOverlay')) closeImport();
+  }
+
+  function resetImport() {
+    importRows = [];
+    importColMap = {};
+    importMode = 'fusion';
+    document.getElementById('importStep1').style.display = '';
+    document.getElementById('importStep2').style.display = 'none';
+    document.getElementById('importConfirmBtn').style.display = 'none';
+    document.getElementById('modeFusion').classList.add('active');
+    document.getElementById('modeRemplacer').classList.remove('active');
+    document.getElementById('modeWarning').style.display = 'none';
+    document.getElementById('importFile').value = '';
+  }
+
+  function onDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+  function onDragLeave() { document.getElementById('dropZone').classList.remove('drag-over'); }
+  function onDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropZone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  }
+
+  function handleImportFile(e) {
+    const file = e.target.files[0];
+    if (file) processFile(file);
+  }
+
+  function processFile(file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        if (ext === 'json') parseJSON(ev.target.result, file.name);
+        else parseCSV(ev.target.result, file.name);
+      } catch(err) {
+        toast('Erreur de lecture : ' + err.message, true);
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  function parseJSON(text, name) {
+    let parsed = JSON.parse(text);
+    if (!Array.isArray(parsed)) throw new Error('Le fichier JSON doit contenir un tableau.');
+    importRows = parsed;
+    showStep2(name, parsed.length, false);
+    buildPreviewFromObjects(parsed);
+  }
+
+  function parseCSV(text, name) {
+    const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+    if (lines.length < 2) throw new Error('Le fichier CSV est vide ou ne contient qu\'une ligne.');
+    const sep = lines[0].includes(';') ? ';' : ',';
+    const headers = splitCSVLine(lines[0], sep).map(h => h.trim().replace(/^["']|["']$/g, ''));
+    const rows = lines.slice(1).filter(l => l.trim()).map(l => {
+      const vals = splitCSVLine(l, sep);
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim().replace(/^["']|["']$/g, ''); });
+      return obj;
+    });
+    importRows = rows;
+    buildColMap(headers);
+    showStep2(name, rows.length, true);
+    renderPreview();
+  }
+
+  function splitCSVLine(line, sep) {
+    const result = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"' && !inQ) { inQ = true; continue; }
+      if (c === '"' && inQ) { if (line[i+1] === '"') { cur += '"'; i++; } else inQ = false; continue; }
+      if (c === sep && !inQ) { result.push(cur); cur = ''; continue; }
+      cur += c;
+    }
+    result.push(cur);
+    return result;
+  }
+
+  function buildColMap(headers) {
+    importColMap = {};
+    FIELDS.forEach(f => {
+      const match = headers.find(h => ALIASES[f.key] && ALIASES[f.key].includes(h.toLowerCase().trim()));
+      importColMap[f.key] = match || '';
+    });
+  }
+
+  function showStep2(name, count, showMap) {
+    document.getElementById('importStep1').style.display = 'none';
+    document.getElementById('importStep2').style.display = '';
+    document.getElementById('importFileInfo').textContent = `📄 ${name} · ${count} ligne${count>1?'s':''}`;
+    document.getElementById('importConfirmBtn').style.display = '';
+    document.getElementById('importCountLabel').textContent = `(${count})`;
+    document.getElementById('previewCount').textContent = `(${Math.min(count, 5)} sur ${count})`;
+    const mapSection = document.getElementById('colMapSection');
+    if (showMap) {
+      mapSection.style.display = '';
+      renderColMap(Object.keys(importRows[0] || {}));
+    } else {
+      mapSection.style.display = 'none';
+    }
+  }
+
+  function renderColMap(csvHeaders) {
+    const grid = document.getElementById('colMapGrid');
+    grid.innerHTML = FIELDS.map(f => `
+      <div class="col-map-row">
+        <label>${f.label}</label>
+        <select onchange="importColMap['${f.key}']=this.value;renderPreview()">
+          <option value="">— ignorer —</option>
+          ${csvHeaders.map(h => `<option value="${h}"${importColMap[f.key]===h?' selected':''}>${h}</option>`).join('')}
+        </select>
+      </div>
+    `).join('');
+  }
+
+  function buildPreviewFromObjects(rows) {
+    const tbody = document.getElementById('previewBody');
+    tbody.innerHTML = rows.slice(0, 5).map(r => `
+      <tr>
+        <td>${r.entreprise||r.Entreprise||r.company||'—'}</td>
+        <td>${r.poste||r.Poste||r.role||r.title||'—'}</td>
+        <td>${r.loc||r.Localisation||r.location||r.ville||'—'}</td>
+        <td style="font-family:var(--mono);font-size:11px;">${r.date||r.Date||'—'}</td>
+        <td>${r.statut||r.Statut||r.status||'—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderPreview() {
+    const tbody = document.getElementById('previewBody');
+    tbody.innerHTML = importRows.slice(0, 5).map(r => {
+      const mapped = mapRow(r);
+      return `<tr>
+        <td>${mapped.entreprise||'—'}</td>
+        <td>${mapped.poste||'—'}</td>
+        <td>${mapped.loc||'—'}</td>
+        <td style="font-family:var(--mono);font-size:11px;">${mapped.date||'—'}</td>
+        <td>${mapped.statut||'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function mapRow(r) {
+    const out = {};
+    FIELDS.forEach(f => {
+      const col = importColMap[f.key];
+      out[f.key] = col ? (r[col] || '') : (r[f.key] || r[f.label] || '');
+    });
+    return out;
+  }
+
+  function normalizeDate(raw) {
+    if (!raw) return '';
+    const d = raw.trim();
+    const iso = d.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (iso) return d;
+    const fr = d.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (fr) return `${fr[3]}-${fr[2]}-${fr[1]}`;
+    const fr2 = d.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    if (fr2) return `${fr2[3]}-${fr2[2]}-${fr2[1]}`;
+    return d;
+  }
+
+  const VALID_STATUTS = ['Envoyée','Vue / À relancer','Relance envoyée','Entretien planifié','Entretien passé','Test technique','Offre reçue','Refus','Abandonnée'];
+
+  function normalizeStatut(raw) {
+    if (!raw) return 'Envoyée';
+    const lower = raw.toLowerCase().trim();
+    const match = VALID_STATUTS.find(s => s.toLowerCase() === lower);
+    return match || 'Envoyée';
+  }
+
+  function setMode(m) {
+    importMode = m;
+    document.getElementById('modeFusion').classList.toggle('active', m === 'fusion');
+    document.getElementById('modeRemplacer').classList.toggle('active', m === 'remplacer');
+    document.getElementById('modeWarning').style.display = m === 'remplacer' ? '' : 'none';
+  }
+
+  function confirmImport() {
+    const newEntries = importRows.map(r => {
+      const mapped = mapRow(r);
+      return {
+        id: crypto.randomUUID(),
+        entreprise: mapped.entreprise || '',
+        poste:      mapped.poste || '',
+        loc:        mapped.loc || '',
+        date:       normalizeDate(mapped.date),
+        statut:     normalizeStatut(mapped.statut),
+        contact:    mapped.contact || '',
+        lien:       mapped.lien || '',
+        notes:      mapped.notes || '',
+        updatedAt:  new Date().toISOString(),
+      };
+    }).filter(e => e.entreprise || e.poste);
+
+    if (!newEntries.length) { toast('Aucune ligne valide (entreprise ou poste requis)', true); return; }
+
+    if (importMode === 'remplacer') {
+      data = newEntries;
+    } else {
+      data = [...newEntries, ...data];
+    }
+    persist();
+    render();
+    closeImport();
+    toast(`${newEntries.length} candidature${newEntries.length>1?'s':''} importée${newEntries.length>1?'s':''} ✓`);
+  }
+
+  load();
+</script>
+</body>
+</html>
